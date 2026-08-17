@@ -211,7 +211,7 @@
 
         headerHTML = 
           '<div class="card-header" onclick="deschideModalEditareComanda(' + globalIndex + ')">' +
-            '<div class="furnizor-name" style="color: #5F6368;">👤 ' + escapeHtml(date.furnizor) + ' <small style="font-weight:normal; font-size:12px; margin-left:4px;">(0 produse)</small></div>' +
+            '<div class="furnizor-name" style="color: #5F6368;">👤 ' + escapeHtml(date.furnizor) + ' <small style="font-weight:normal; margin-left:4px;">(0 produse)</small></div>' +
             '<label class="checkbox-verificare" onclick="event.stopPropagation()">' +
               '<input type="checkbox" ' + (esteBifat ? 'checked' : '') + ' onchange="bifeazaVerificare(this, \'' + escapeHtml(date.furnizor) + '\', ' + globalIndex + ')">' +
               'Verificat' +
