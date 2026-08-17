@@ -48,8 +48,10 @@
           furnizor.produseFormular.forEach(p => {
             if (p.produs && p.produs.trim() !== "") {
               const option = document.createElement('option');
-              option.value = p.produs.trim() + ' (' + furnizor.furnizor + ')';
+              const numeProdus = p.produs.trim();
+              option.value = numeProdus + ' (' + furnizor.furnizor + ')';
               option.setAttribute('data-index', index);
+              option.setAttribute('data-produs', numeProdus);
               datalist.appendChild(option);
             }
           });
@@ -63,10 +65,12 @@
       
       // Verificam daca e o selectie exacta din dropdown
       let globalIndexMatch = null;
+      let numeProdusMatch = null;
       const optiuni = document.querySelectorAll('#lista-sugestii option');
       optiuni.forEach(opt => {
         if (opt.value === val) {
           globalIndexMatch = opt.getAttribute('data-index');
+          numeProdusMatch = opt.getAttribute('data-produs');
         }
       });
 
@@ -76,7 +80,7 @@
         
         const tabComenzi = document.getElementById('tab-btn-comenzi').classList.contains('activ');
         if (tabComenzi) {
-          deschideModalEditareComanda(globalIndexMatch);
+          deschideModalEditareComanda(globalIndexMatch, numeProdusMatch);
         } else {
           if (!deschisePanouriConfig[dateGlobal[globalIndexMatch].furnizor]) {
              comutaPanouConfig(globalIndexMatch);
@@ -368,7 +372,7 @@
         '<option value="40">40</option>';
     }
 
-    function deschideModalEditareComanda(globalIndex) {
+    function deschideModalEditareComanda(globalIndex, preselectProduct = null) {
       const date = dateGlobal[globalIndex];
       if (!date) return;
       editareCurentaGlobalIndex = globalIndex;
@@ -380,6 +384,17 @@
       overlay.style.display = "flex";
       
       populeazaDropdownuriModal();
+      
+      if (preselectProduct) {
+        const selProdus = document.getElementById('modal-sel-produs');
+        for (let i = 0; i < selProdus.options.length; i++) {
+          if (selProdus.options[i].text === preselectProduct) {
+            selProdus.selectedIndex = i;
+            schimbaProdusModal();
+            break;
+          }
+        }
+      }
     }
 
     function inchideModalEditare() {
