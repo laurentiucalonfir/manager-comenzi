@@ -40,12 +40,48 @@
     }
 
     function filtreazaFurnizori() {
-      const termen = (document.getElementById('search-bar').value || '').toLowerCase();
+      const termen = (document.getElementById('search-bar').value || '').toLowerCase().trim();
       const toateCardurile = document.querySelectorAll('.card');
+      
       toateCardurile.forEach(card => {
-        const textCautare = (card.getAttribute('data-cautare') || '').toLowerCase();
-        if (textCautare.includes(termen)) {
+        const globalIndex = card.getAttribute('data-index');
+        if (globalIndex === null) return;
+        
+        const dateFurnizor = dateGlobal[globalIndex];
+        let matchedProduse = [];
+        let matchFurnizor = dateFurnizor.furnizor.toLowerCase().includes(termen);
+        
+        if (dateFurnizor.produseFormular) {
+          dateFurnizor.produseFormular.forEach(p => {
+             if (p.produs.toLowerCase().includes(termen)) {
+                 matchedProduse.push(p.produs);
+             }
+          });
+        }
+        
+        let matchOrice = matchFurnizor || (matchedProduse.length > 0);
+        
+        let containerCautare = card.querySelector('.search-results');
+        if (!containerCautare) {
+           containerCautare = document.createElement('div');
+           containerCautare.className = 'search-results';
+           containerCautare.style.fontSize = '13px';
+           containerCautare.style.color = '#059669';
+           containerCautare.style.marginTop = '4px';
+           containerCautare.style.fontWeight = 'bold';
+           card.querySelector('.card-header').appendChild(containerCautare);
+        }
+
+        if (termen === "") {
           card.style.display = '';
+          containerCautare.innerText = '';
+        } else if (matchOrice) {
+          card.style.display = '';
+          if (matchedProduse.length > 0) {
+             containerCautare.innerText = "🛒 Găsit: " + matchedProduse.join(", ");
+          } else {
+             containerCautare.innerText = "";
+          }
         } else {
           card.style.display = 'none';
         }
@@ -190,11 +226,7 @@
       const card = document.createElement("div");
       const textEnc = encodeURIComponent(date.mesaj);
 
-      let textCautare = date.furnizor + " ";
-      if (date.produseFormular) {
-        date.produseFormular.forEach(p => textCautare += p.produs + " ");
-      }
-      card.setAttribute("data-cautare", textCautare);
+      card.setAttribute("data-index", globalIndex);
 
       let headerHTML = "";
       let corpHTML = "";
@@ -243,12 +275,7 @@
       const chevronIcon = esteDeschis ? "▲" : "▼";
       card.className = "card";
       card.style.borderLeftColor = "#3b82f6";
-
-      let textCautare = date.furnizor + " ";
-      if (date.produseFormular) {
-        date.produseFormular.forEach(p => textCautare += p.produs + " ");
-      }
-      card.setAttribute("data-cautare", textCautare);
+      card.setAttribute("data-index", globalIndex);
 
       let infoTel = date.telefon ? (" (" + escapeHtml(date.telefon) + ")") : "";
 
