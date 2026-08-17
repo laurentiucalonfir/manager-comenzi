@@ -1,0 +1,15 @@
+{
+  "name": "Manager Comenzi",
+  "short_name": "Comenzi",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f7f6",
+  "theme_color": "#2c3e50",
+  "icons": [
+    {
+      "src": "https://png.pngtree.com/png-vector/20250205/ourmid/pngtree-inventory-management-software-featuring-3d-icon-isolated-on-a-transparent-background-png-image_15380985.png", 
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

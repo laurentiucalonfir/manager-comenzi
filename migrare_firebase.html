@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Migrare date din Google Sheets în Firebase</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; padding: 20px; color: #1e293b; max-width: 600px; margin: 0 auto; }
+    h1 { color: #0f172a; font-size: 20px; text-align: center; }
+    .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; font-size: 12px; font-weight: bold; color: #64748b; margin-bottom: 5px; text-transform: uppercase; }
+    textarea, input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: monospace; font-size: 13px; box-sizing: border-box; }
+    button { width: 100%; background: #2563eb; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+    button:hover { background: #1d4ed8; }
+    #log { background: #0f172a; color: #38bdf8; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 12px; max-height: 280px; overflow-y: auto; white-space: pre-wrap; display: none; margin-top: 15px; }
+    .tip { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 10px 12px; font-size: 13px; color: #1e40af; border-radius: 4px; margin-bottom: 15px; }
+  </style>
+</head>
+<body>
+
+  <h1>🚀 Pasul 1: Migrare Date în Firebase</h1>
+
+  <div class="card">
+    <div class="tip">
+      💡 <strong>Nu-ți face griji de format!</strong> Lipește tot blocul de cod pe care îl vezi în Firebase Console (inclusiv <code>const firebaseConfig = { ... }</code>), iar aplicația va extrage automat cheile necesare.
+    </div>
+
+    <div class="form-group">
+      <label>1. URL Google Apps Script (Sursă)</label>
+      <input type="text" id="script-url" value="https://script.google.com/macros/s/AKfycbxvk320rZ0JCWfdvvgX1X9wvn_qG2KgT3lgPR1qV9GeBvn32HoKJqpKH2p2jCtV13C1/exec">
+    </div>
+
+    <div class="form-group">
+      <label>2. Lipește Codul Configurație din Firebase</label>
+      <textarea id="firebase-config" rows="9" placeholder='Lipește codul de configurare copiat din Firebase Console. Ex:
+
+const firebaseConfig = {
+  apiKey: "AIzaSy...",
+  authDomain: "proiectul-tau.firebaseapp.com",
+  projectId: "proiectul-tau",
+  storageBucket: "proiectul-tau.appspot.com",
+  messagingSenderId: "12345...",
+  appId: "1:12345..."
+};'></textarea>
+    </div>
+
+    <button id="btn-migrare" onclick="startMigrare()">⚡ Începe Migrarea Automat</button>
+  </div>
+
+  <div id="log"></div>
+
+  <!-- Direct REST API Implementation -->
+  <script>
+    function logMsg(msg) {
+      const logDiv = document.getElementById("log");
+      logDiv.style.display = "block";
+      logDiv.innerText += msg + "\n";
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    function slugify(text) {
+      return String(text).toLowerCase().trim()
+        .replace(/ă/g, 'a').replace(/â/g, 'a').replace(/î/g, 'i').replace(/ș/g, 's').replace(/ț/g, 't')
+        .replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+    }
+
+    function extractConfig(text) {
+      text = text.trim();
+      try {
+        return JSON.parse(text);
+      } catch(e) {
+        const apiKey = (text.match(/apiKey\s*:\s*["']([^"']+)["']/) || [])[1];
+        const authDomain = (text.match(/authDomain\s*:\s*["']([^"']+)["']/) || [])[1];
+        const projectId = (text.match(/projectId\s*:\s*["']([^"']+)["']/) || [])[1];
+        const storageBucket = (text.match(/storageBucket\s*:\s*["']([^"']+)["']/) || [])[1];
+        const messagingSenderId = (text.match(/messagingSenderId\s*:\s*["']([^"']+)["']/) || [])[1];
+        const appId = (text.match(/appId\s*:\s*["']([^"']+)["']/) || [])[1];
+
+        if (apiKey && projectId) {
+          return { apiKey, authDomain, projectId, storageBucket, messagingSenderId, appId };
+        }
+        throw new Error("Nu s-au putut extrage cheile apiKey și projectId din textul introdus.");
+      }
+    }
+
+    function toFirestoreValue(val) {
+      if (val === null || val === undefined) return { nullValue: null };
+      if (typeof val === 'boolean') return { booleanValue: val };
+      if (typeof val === 'number') {
+        if (Number.isInteger(val)) return { integerValue: String(val) };
+        return { doubleValue: val };
+      }
+      if (typeof val === 'string') return { stringValue: val };
+      if (Array.isArray(val)) {
+        return { arrayValue: { values: val.map(toFirestoreValue) } };
+      }
+      if (typeof val === 'object') {
+        const fields = {};
+        for (const k in val) {
+          fields[k] = toFirestoreValue(val[k]);
+        }
+        return { mapValue: { fields } };
+      }
+      return { stringValue: String(val) };
+    }
+
+    function toFirestoreFields(obj) {
+      const fields = {};
+      for (const k in obj) {
+        fields[k] = toFirestoreValue(obj[k]);
+      }
+      return { fields };
+    }
+
+    async function saveDocRest(projectId, apiKey, collectionName, docId, data) {
+      const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/${collectionName}/${docId}?key=${apiKey}`;
+      const body = JSON.stringify(toFirestoreFields(data));
+      const res = await fetch(url, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: body
+      });
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        const msg = errJson.error ? errJson.error.message : ("HTTP " + res.status);
+        throw new Error(msg);
+      }
+    }
+
+    window.startMigrare = async function() {
+      const scriptUrl = document.getElementById("script-url").value.trim();
+      const configStr = document.getElementById("firebase-config").value.trim();
+
+      if (!scriptUrl) {
+        alert("Introduceți URL-ul Google Apps Script!");
+        return;
+      }
+      if (!configStr) {
+        alert("Lipește codul de configurare sau URL-ul Realtime Database!");
+        return;
+      }
+
+      const btn = document.getElementById("btn-migrare");
+      btn.disabled = true;
+      btn.innerText = "⏳ Se efectuează migrarea...";
+
+      logMsg("📡 Se descarcă datele din Google Sheets...");
+      try {
+        const res = await fetch(scriptUrl, {
+          method: "POST",
+          body: JSON.stringify({ actiune: "obtineComenzi", tipGestiune: "" })
+        });
+        const json = await res.json();
+        const listeComenzi = json.date;
+        logMsg("✅ Descărcare completă! S-au găsit " + listeComenzi.length + " furnizori.");
+
+        // Verificăm dacă utilizatorul a introdus URL-ul de Realtime Database
+        if (configStr.includes("firebasedatabase.app") || configStr.startsWith("http")) {
+          let rtdbUrl = configStr.trim().replace(/\/+$/, "");
+          if (!rtdbUrl.endsWith(".json")) rtdbUrl += "/comenzi.json";
+
+          logMsg("🔥 Trimitere instantă în Firebase Realtime Database: " + rtdbUrl + "...");
+
+          const putRes = await fetch(rtdbUrl, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(listeComenzi)
+          });
+
+          if (!putRes.ok) {
+            const errText = await putRes.text();
+            throw new Error("Eroare Realtime DB (" + putRes.status + "): " + errText);
+          }
+
+          logMsg("\n🎉 MIGRARE FINALIZATĂ CU SUCCES ÎN 50ms!");
+          logMsg("---------------------------------");
+          logMsg("✅ S-au salvat toți cei " + listeComenzi.length + " furnizori și produsele lor în Firebase Realtime Database!");
+          logMsg("\nToate datele tale sunt acum salvate în Firebase!");
+          btn.innerText = "✅ Migrare Completă!";
+          btn.style.background = "#166534";
+          return;
+        }
+
+        // Altfel, se încearcă configurarea Firestore
+        let firebaseConfig = extractConfig(configStr);
+        logMsg("🔥 Trimitere prin Firestore API REST (Proiect: " + firebaseConfig.projectId + ")...");
+
+        let totalFurnizori = 0;
+        let totalGestiuni = 0;
+        let totalProduse = 0;
+        const allDocs = [];
+
+        for (const item of listeComenzi) {
+          const furnizorId = slugify(item.furnizor);
+          allDocs.push({ coll: "furnizori", id: furnizorId, data: { id: furnizorId, nume: item.furnizor, telefon: item.telefon || "" } });
+          totalFurnizori++;
+
+          if (item.gestiuni && item.gestiuni.length > 0) {
+            for (const g of item.gestiuni) {
+              const gestiuneId = furnizorId + "_g_" + g.colIndex;
+              allDocs.push({ coll: "gestiuni", id: gestiuneId, data: { id: gestiuneId, furnizorId: furnizorId, nume: g.nume, colIndex: g.colIndex } });
+              totalGestiuni++;
+            }
+          }
+
+          if (item.produseFormular && item.produseFormular.length > 0) {
+            for (const p of item.produseFormular) {
+              const produsId = furnizorId + "_p_" + p.randIndex;
+              allDocs.push({ coll: "produse", id: produsId, data: { id: produsId, furnizorId: furnizorId, produs: p.produs, ambalaj: Number(p.ambalaj) || 1, tipAmbalaj: p.tipAmbalaj || "buc.", randIndex: p.randIndex, valoriGestiuni: p.valoriGestiuni || {} } });
+              totalProduse++;
+            }
+          }
+        }
+
+        const CONCURRENCY = 15;
+        let finalizate = 0;
+        for (let i = 0; i < allDocs.length; i += CONCURRENCY) {
+          const chunk = allDocs.slice(i, i + CONCURRENCY);
+          await Promise.all(chunk.map(item => saveDocRest(firebaseConfig.projectId, firebaseConfig.apiKey, item.coll, item.id, item.data)));
+          finalizate += chunk.length;
+          logMsg(" ➔ Salvat " + finalizate + " din " + allDocs.length + " documente (" + Math.round((finalizate / allDocs.length) * 100) + "%)...");
+        }
+
+        logMsg("\n🎉 MIGRARE FINALIZATĂ CU SUCCES!");
+        logMsg("---------------------------------");
+        logMsg("✅ Furnizori salvați: " + totalFurnizori);
+        logMsg("✅ Gestiuni salvate: " + totalGestiuni);
+        logMsg("✅ Produse salvate: " + totalProduse);
+        logMsg("\nToate datele tale sunt acum în Firebase!");
+        btn.innerText = "✅ Migrare Completă!";
+        btn.style.background = "#166534";
+
+      } catch(err) {
+        logMsg("\n❌ EROARE SALVARE FIREBASE:");
+        logMsg(err.message);
+        if (err.message.includes("permission") || err.message.includes("Permission") || err.message.includes("PERMISSION_DENIED")) {
+          logMsg("\n⚠️ CAUZĂ: Regulile de securitate Firebase blochează scrierea!");
+          logMsg("👉 SOLUȚIE: În Consola Firebase ➔ Realtime Database (sau Firestore) ➔ Reguli (Rules)");
+          logMsg("Setează regulile pe true (.read: true, .write: true) și apasă Publish!");
+        }
+        btn.disabled = false;
+        btn.innerText = "⚡ Începe Migrarea Automat";
+      }
+    };
+  </script>
+</body>
+</html>

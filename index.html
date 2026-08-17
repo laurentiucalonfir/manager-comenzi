@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Comenzi">
+  <meta name="theme-color" content="#2c3e50">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3014/3014948.png">
+
+  <title>Manager Comenzi</title>
+
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Firebase Compat Web SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+  <!-- Ecran Login -->
+  <div id="login-screen">
+    <div id="login-box">
+      <h3>🔐 Autentificare</h3>
+      <div id="login-error">Email sau parolă incorectă!</div>
+      <input type="email" id="login-email" placeholder="Email" autocomplete="email">
+      <input type="password" id="login-password" placeholder="Parola" autocomplete="current-password">
+      <button onclick="efectueazaLogin()">Loghează-te</button>
+    </div>
+  </div>
+
+  <h2 id="titlu-pagina" style="display:none;">📦 Se încarcă...</h2>
+  
+  <div id="continut" style="display:none;">
+    
+    <div style="margin-bottom: 15px; position: relative;">
+      <span style="position: absolute; left: 12px; top: 10px; color: #94a3b8;">🔍</span>
+      <input type="text" id="search-bar" placeholder="Caută furnizor..." oninput="filtreazaFurnizori()" autocomplete="off">
+    </div>
+
+    <div class="nav-tabs">
+      <button id="tab-btn-comenzi" class="tab-btn activ" onclick="comutaTab('comenzi')">📦 Comenzi</button>
+      <button id="tab-btn-config" class="tab-btn" onclick="comutaTab('config')">⚙️ Configurare</button>
+    </div>
+
+    <!-- TAB 1: COMENZI -->
+    <div id="tab-comenzi" class="tab-continut activ">
+      <button id="btn-reset-global" onclick="deschideModalConfirmare()">🧹 Resetează Toate Tabelele (0)</button>
+      <div id="zona-carduri-comenzi"></div>
+    </div>
+
+    <!-- TAB 2: CONFIGURARE -->
+    <div id="tab-config" class="tab-continut">
+      <button onclick="efectueazaLogout()" style="width:100%; padding:10px; margin-bottom:15px; background:#94a3b8; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">🚪 Deconectare (Logout)</button>
+      <button id="btn-adaug-furnizor" class="btn-add-furnizor" onclick="deschideModalFurnizor(-1)">➕ Adaugă Furnizor Nou</button>
+      <div id="zona-carduri-config"></div>
+    </div>
+  </div>
+
+  <!-- Modal Confirmare Resetare Generală -->
+  <div id="modal-confirmare" class="modal-overlay">
+    <div class="modal-box">
+      <p style="margin:0; font-weight:bold; color:#1e293b;">Sigur doriți să ștergeți toate cantitățile?</p>
+      <div class="modal-actions">
+        <button class="btn-modal btn-modal-danger" onclick="reseteazaMecanic()">Da</button>
+        <button class="btn-modal btn-modal-cancel" onclick="inchideModal('modal-confirmare')">Nu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Custom Furnizor -->
+  <div id="modal-furnizor" class="modal-overlay">
+    <div class="modal-box">
+      <div id="modal-furnizor-titlu" class="modal-title">➕ Adaugă Furnizor</div>
+      <div class="modal-body">
+        <label>Nume Furnizor</label>
+        <input type="text" id="m-furnizor-nume" placeholder="ex: Cola, Avitop">
+        <label>Telefon (Opțional, cu 40...)</label>
+        <input type="text" id="m-furnizor-telefon" placeholder="ex: 40712345678">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-modal-save" onclick="salveazaModalFurnizor()">💾 Salvează</button>
+        <button class="btn-modal btn-modal-cancel" onclick="inchideModal('modal-furnizor')">Anulează</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Custom Gestiune -->
+  <div id="modal-gestiune" class="modal-overlay">
+    <div class="modal-box">
+      <div id="modal-gestiune-titlu" class="modal-title">➕ Adaugă Gestiune</div>
+      <div class="modal-body">
+        <label>Nume Gestiune / Locație</label>
+        <input type="text" id="m-gestiune-nume" placeholder="ex: Bistro nr. 137, Pietonal">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-modal-save" onclick="salveazaModalGestiune()">💾 Salvează</button>
+        <button class="btn-modal btn-modal-cancel" onclick="inchideModal('modal-gestiune')">Anulează</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Custom Produs -->
+  <div id="modal-produs" class="modal-overlay">
+    <div class="modal-box">
+      <div id="modal-produs-titlu" class="modal-title">➕ Adaugă Produs</div>
+      <div class="modal-body">
+        <label>Nume Produs</label>
+        <input type="text" id="m-produs-nume" placeholder="ex: Cola 0.5L, Fanta">
+        <label>Tip Ambalaj</label>
+        <input type="text" id="m-produs-tip" placeholder="ex: buc. sau bax" value="buc.">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-modal-save" onclick="salveazaModalProdus()">💾 Salvează</button>
+        <button class="btn-modal btn-modal-cancel" onclick="inchideModal('modal-produs')">Anulează</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal General Confirmare Ștergere -->
+  <div id="modal-stergere" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-title" style="color:#ef4444;">⚠️ Confirmare Ștergere</div>
+      <div class="modal-body" id="modal-stergere-mesaj" style="text-align:center; font-weight:bold; color:#334155;">
+        Sigur doriți să ștergeți?
+      </div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-modal-danger" id="btn-confirm-stergere">🗑️ Da, Șterge</button>
+        <button class="btn-modal btn-modal-cancel" onclick="inchideModal('modal-stergere')">Anulează</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Editare Comandă -->
+  <div id="modal-editare-comanda" class="modal-overlay">
+    <div class="modal-box">
+      <div id="modal-editare-titlu" class="modal-title">📦 Adaugă Cantități</div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Locație / Gestiune</label>
+          <select id="modal-sel-gestiune" class="form-control" onchange="schimbaGestiuneModal()"></select>
+        </div>
+        <div class="form-group" style="margin-top:10px;">
+          <label>Produs</label>
+          <select id="modal-sel-produs" class="form-control" onchange="schimbaProdusModal()"></select>
+        </div>
+        <div class="form-group" style="margin-top:10px;">
+          <label>Cantitate (0 = Ștergere)</label>
+          <select id="modal-inp-cantitate" class="form-control" onchange="actualizeazaStilButonModal()">
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="modal-btn-salveaza" class="btn-modal btn-modal-save" onclick="trimiteCantitateModal()">💾 Salvează</button>
+        <button class="btn-modal btn-modal-cancel" onclick="inchideModalEditare()">Închide</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container Notificări Toast -->
+  <div id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
