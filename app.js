@@ -227,7 +227,11 @@
 
         zona.innerHTML = istoricComenzi.map((c, idx) => {
             let encodedMessage = encodeURIComponent(c.mesaj);
-            let linkWa = "https://wa.me/?text=" + encodedMessage;
+            let numarTelefon = c.telefon ? c.telefon.replace(/[^0-9]/g, '') : "";
+            if (numarTelefon && !numarTelefon.startsWith("40") && numarTelefon.length === 10) {
+              numarTelefon = "40" + numarTelefon;
+            }
+            let linkWa = numarTelefon ? "https://wa.me/" + numarTelefon + "?text=" + encodedMessage : "https://wa.me/?text=" + encodedMessage;
             return `
             <div class="card-istoric">
                 <div class="card-istoric-header">
@@ -248,6 +252,7 @@
         const intrareNoua = {
             data: new Date().toISOString(),
             furnizor: c.furnizor,
+            telefon: c.telefon || "",
             mesaj: c.mesaj
         };
         istoricComenzi.unshift(intrareNoua);
@@ -644,6 +649,7 @@
         const intrareIstoric = {
           data: new Date().toISOString(),
           furnizor: furnizorNume,
+          telefon: date.telefon || "",
           mesaj: date.mesaj
         };
         istoricComenzi.unshift(intrareIstoric);
