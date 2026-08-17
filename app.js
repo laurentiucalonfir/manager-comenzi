@@ -82,10 +82,13 @@
         
         const dateFurnizor = dateGlobal[globalIndex];
         
-        // 1. Filtru Furnizor (text)
+        // 1. Filtru Text (cauta si in nume furnizor si in produse)
         let matchFurnizor = true;
         if (termenFurnizor !== '') {
           matchFurnizor = dateFurnizor.furnizor.toLowerCase().includes(termenFurnizor);
+          if (!matchFurnizor && dateFurnizor.produseFormular) {
+            matchFurnizor = dateFurnizor.produseFormular.some(p => p.produs.toLowerCase().includes(termenFurnizor));
+          }
         }
         
         // 2. Filtru Produs (dropdown exact)
