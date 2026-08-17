@@ -15,7 +15,6 @@
     const db = firebase.database();
 
     let dateGlobal = [];
-    let istoricComenzi = JSON.parse(localStorage.getItem("istoricComenzi") || "[]");
     let furnizoriVerificati = JSON.parse(localStorage.getItem("furnizoriVerificati") || "{}");
     let furnizoriTrimisi = JSON.parse(localStorage.getItem("furnizoriTrimisi") || "{}");
     let editareCurentaGlobalIndex = -1;
@@ -89,14 +88,6 @@
         // Ignoram eroarea (se deconecteaza)
       });
 
-      db.ref('istoric_comenzi').on('value', (snapshot) => {
-        let ist = snapshot.val();
-        if (ist && Array.isArray(ist)) {
-          istoricComenzi = ist;
-          localStorage.setItem("istoricComenzi", JSON.stringify(istoricComenzi));
-        }
-        afiseazaIstoric();
-      });
     }
 
     function comutaTab(tabNume) {
@@ -110,89 +101,6 @@
         afiseazaIstoric();
       }
     }
-
-    function afiseazaIstoric() {
-        const zona = document.getElementById('zona-carduri-istoric');
-        if (!zona) return;
-        
-        let istoricFiltrat = istoricComenzi;
-        const searchInput = document.getElementById('search-istoric');
-        if (searchInput && searchInput.value.trim() !== "") {
-            const termen = searchInput.value.toLowerCase().trim();
-            istoricFiltrat = istoricComenzi.filter(c => c.furnizor.toLowerCase().includes(termen));
-        }
-        
-        if (istoricFiltrat.length === 0) {
-            zona.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8;">Nu există comenzi în istoric conform căutării.</div>';
-            return;
-        }
-
-        zona.innerHTML = istoricFiltrat.map((c, idx) => {
-            let encodedMessage = encodeURIComponent(c.mesaj);
-            let numarTelefon = c.telefon ? c.telefon.replace(/[^0-9]/g, '') : "";
-            if (numarTelefon && !numarTelefon.startsWith("40") && numarTelefon.length === 10) {
-              numarTelefon = "40" + numarTelefon;
-            }
-            let linkWa = numarTelefon ? "https://wa.me/" + numarTelefon + "?text=" + encodedMessage : "https://wa.me/?text=" + encodedMessage;
-            return `
-            <div class="card-istoric">
-                <div class="card-istoric-header">
-                  <span class="istoric-furnizor">👤 ${escapeHtml(c.furnizor)}</span>
-                  <span class="istoric-data">${new Date(c.data).toLocaleString('ro-RO')}</span>
-                </div>
-                <pre class="istoric-mesaj">${escapeHtml(c.mesaj)}</pre>
-                <a href="${linkWa}" target="_blank" class="btn-retrimite" onclick="retrimiteComandaDinIstoric(${idx})">🔁 Retrimite</a>
-            </div>
-            `;
-        }).join('');
-    }
-
-    function retrimiteComandaDinIstoric(idx) {
-        const c = istoricComenzi[idx];
-        if (!c) return;
-        // La retrimiteri, doar il mutam inapoi sus in istoric cu data noua
-        const intrareNoua = {
-            data: new Date().toISOString(),
-            furnizor: c.furnizor,
-            telefon: c.telefon || "",
-            mesaj: c.mesaj
-        };
-        istoricComenzi.unshift(intrareNoua);
-        if (istoricComenzi.length > 100) istoricComenzi = istoricComenzi.slice(0, 100);
-        localStorage.setItem("istoricComenzi", JSON.stringify(istoricComenzi));
-        firebase.database().ref('istoric_comenzi').set(istoricComenzi);
-        afiseazaIstoric();
-    }
-
-    function stergeTotIstoricul() {
-        istoricComenzi = [];
-        localStorage.removeItem("istoricComenzi");
-        firebase.database().ref('istoric_comenzi').set(istoricComenzi);
-        afiseazaIstoric();
-    }
-
-
-    // --- DARK MODE LOGIC ---
-    let isDarkMode = localStorage.getItem("tema") === "dark";
-    
-    function aplicaTema() {
-        if (isDarkMode) {
-            document.body.classList.add("dark-mode");
-            document.getElementById("btn-tema").innerText = "🌙";
-        } else {
-            document.body.classList.remove("dark-mode");
-            document.getElementById("btn-tema").innerText = "☀️";
-        }
-        document.getElementById("btn-tema").style.display = "block";
-    }
-
-    function comutaTema() {
-        isDarkMode = !isDarkMode;
-        localStorage.setItem("tema", isDarkMode ? "dark" : "light");
-        aplicaTema();
-    }
-    
-    document.addEventListener("DOMContentLoaded", aplicaTema);
 
     function afiseazaToateCardurile(listeComenzi) {
       const zonaComenzi = document.getElementById("zona-carduri-comenzi");
@@ -569,22 +477,7 @@
         btn.style.pointerEvents = "none";
       }
 
-      // Adaugare la istoric
-      if (date && date.mesaj && date.mesaj.trim() !== "") {
-        const intrareIstoric = {
-          data: new Date().toISOString(),
-          furnizor: furnizorNume,
-          telefon: date.telefon || "",
-          mesaj: date.mesaj
-        };
-        istoricComenzi.unshift(intrareIstoric);
-        if (istoricComenzi.length > 100) {
-          istoricComenzi = istoricComenzi.slice(0, 100);
-        }
-        localStorage.setItem("istoricComenzi", JSON.stringify(istoricComenzi));
-        firebase.database().ref('istoric_comenzi').set(istoricComenzi);
-        afiseazaIstoric();
-      }
+
       
       const card = document.getElementById("card-" + globalIndex);
       if (card) card.classList.add("trimis");
