@@ -1,1 +1,0 @@
-const fs = require('fs'); let lines = fs.readFileSync('app.js', 'utf8').split('\n'); let newLines = lines.filter((l, i) => i !== 17); /* removes let istoricComenzi... */ fs.writeFileSync('app.js', newLines.join('\n'));
