@@ -59,7 +59,7 @@
     .btn-sterge { background-color: #D93025 !important; }
     .btn-sterge:hover { background-color: #C5221F !important; }
 
-    .nav-tabs { display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 2px solid #DADCE0; padding-bottom: 10px; }
+    .nav-tabs { display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 2px solid #DADCE0; padding-bottom: 10px; position: sticky; top: 0; background-color: #F0F2F5; z-index: 1000; padding-top: 10px; margin-top: -10px; }
     .tab-btn { flex: 1; padding: 12px 0; border: none; background: #E8EAED; color: #3C4043; font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 14px; transition: all 0.2s ease; }
     .tab-btn.activ { background: #1A73E8; color: white; box-shadow: 0 2px 6px rgba(37,99,235,0.25); }
     .tab-continut { display: none; }
