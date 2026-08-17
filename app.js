@@ -66,7 +66,13 @@
           if (furnizor.produseFormular) {
             furnizor.produseFormular.forEach(p => {
               if (p.produs.toLowerCase().includes(termen)) {
-                rezultate.push({ tip: 'produs', index: index, furnizor: furnizor.furnizor, produs: p.produs.trim() });
+                rezultate.push({ 
+                  tip: 'produs', 
+                  index: index, 
+                  furnizor: furnizor.furnizor, 
+                  produs: p.produs.trim(),
+                  randIndex: p.randIndex 
+                });
               }
             });
           }
@@ -107,7 +113,7 @@
             
             const tabComenzi = document.getElementById('tab-btn-comenzi').classList.contains('activ');
             if (tabComenzi) {
-              deschideModalEditareComanda(rez.index, rez.produs);
+              deschideModalEditareComanda(rez.index, rez.randIndex);
             } else {
               if (!deschisePanouriConfig[rez.furnizor]) {
                  comutaPanouConfig(rez.index);
@@ -390,7 +396,7 @@
         '<option value="40">40</option>';
     }
 
-    function deschideModalEditareComanda(globalIndex, preselectProduct = null) {
+    function deschideModalEditareComanda(globalIndex, preselectRandIndex = null) {
       const date = dateGlobal[globalIndex];
       if (!date) return;
       editareCurentaGlobalIndex = globalIndex;
@@ -403,14 +409,18 @@
       
       populeazaDropdownuriModal();
       
-      if (preselectProduct) {
+      if (preselectRandIndex !== null && preselectRandIndex !== undefined) {
         const selProdus = document.getElementById('modal-sel-produs');
+        let gasit = false;
         for (let i = 0; i < selProdus.options.length; i++) {
-          if (selProdus.options[i].text.trim() === preselectProduct.trim()) {
-            selProdus.selectedIndex = i;
-            schimbaProdusModal();
+          if (selProdus.options[i].value == preselectRandIndex) {
+            gasit = true;
             break;
           }
+        }
+        if (gasit) {
+          selProdus.value = preselectRandIndex;
+          schimbaProdusModal();
         }
       }
     }
