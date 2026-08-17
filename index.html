@@ -14,7 +14,7 @@
 
   <title>Manager Comenzi</title>
 
-  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="stylesheet" href="style.css?v=5">
   
   <!-- Firebase Compat Web SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -40,7 +40,8 @@
     
     <div class="search-container">
       <span class="search-icon">🔍</span>
-      <input type="text" id="search-bar" placeholder="Caută furnizor / produs..." oninput="filtreazaFurnizori()" autocomplete="off">
+      <input type="text" id="search-bar" placeholder="Caută furnizor / produs..." autocomplete="off">
+      <div id="search-dropdown" class="search-dropdown" style="display: none;"></div>
     </div>
 
     <div class="nav-tabs">
@@ -166,7 +167,7 @@
   <!-- Container Notificări Toast -->
   <div id="toast-container"></div>
 
-  <script src="app.js?v=4"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>
 

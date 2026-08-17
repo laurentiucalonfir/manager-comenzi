@@ -90,10 +90,17 @@
     #login-box button:hover { background: #1d4ed8; }
     #login-error { color: #ef4444; font-size: 13px; text-align: center; margin-bottom: 10px; display: none; }
     
-    .search-container { position: relative; margin-bottom: 15px; width: 100%; }
+    .search-container { position: relative; margin-bottom: 15px; width: 100%; z-index: 50; }
     .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 15px; pointer-events: none; z-index: 2; opacity: 0.7; }
     #search-bar { width: 100%; padding: 14px 14px 14px 38px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 15px; font-family: inherit; box-sizing: border-box; outline: none; transition: all 0.2s ease; background-color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
     #search-bar:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+    
+    .search-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: white; margin-top: 5px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); max-height: 300px; overflow-y: auto; border: 1px solid #e2e8f0; display: none; z-index: 100; }
+    .search-item { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.2s; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+    .search-item:last-child { border-bottom: none; }
+    .search-item:hover, .search-item:active { background: #f8fafc; }
+    .search-item strong { color: #1e293b; }
+    .search-item span { color: #64748b; font-size: 13px; }
     
     #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 9999; pointer-events: none; }
     .toast { padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: bold; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: toastSlideIn 0.3s ease forwards; max-width: 90vw; text-align: center; }
