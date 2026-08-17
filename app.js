@@ -406,7 +406,7 @@
       if (preselectProduct) {
         const selProdus = document.getElementById('modal-sel-produs');
         for (let i = 0; i < selProdus.options.length; i++) {
-          if (selProdus.options[i].text === preselectProduct) {
+          if (selProdus.options[i].text.trim() === preselectProduct.trim()) {
             selProdus.selectedIndex = i;
             schimbaProdusModal();
             break;
@@ -1036,5 +1036,7 @@
         arataNotificare("❌ Eroare la resetare în Firebase!", "error");
       });
     }
+
+    document.addEventListener("DOMContentLoaded", initializeazaAutocomplete);
 
 
