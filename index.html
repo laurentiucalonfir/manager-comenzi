@@ -14,7 +14,7 @@
 
   <title>Manager Comenzi</title>
 
-  <link rel="stylesheet" href="style.css?v=11">
+  <link rel="stylesheet" href="style.css?v=12">
   
   <!-- Firebase Compat Web SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -48,6 +48,7 @@
 
     <div class="nav-tabs">
       <button id="tab-btn-comenzi" class="tab-btn activ" onclick="comutaTab('comenzi')">📦 Comenzi</button>
+      <button id="tab-btn-istoric" class="tab-btn" onclick="comutaTab('istoric')">🕒 Istoric</button>
       <button id="tab-btn-config" class="tab-btn" onclick="comutaTab('config')">⚙️ Configurare</button>
     </div>
 
@@ -57,7 +58,13 @@
       <div id="zona-carduri-comenzi"></div>
     </div>
 
-    <!-- TAB 2: CONFIGURARE -->
+    <!-- TAB 2: ISTORIC -->
+    <div id="tab-istoric" class="tab-continut">
+      <button id="btn-reset-istoric" onclick="deschideModalStergere('Sigur doriți să ștergeți tot istoricul?', stergeTotIstoricul)" style="width:100%; padding:10px; margin-bottom:15px; background:#ef4444; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">🗑️ Șterge Istoricul</button>
+      <div id="zona-carduri-istoric"></div>
+    </div>
+
+    <!-- TAB 3: CONFIGURARE -->
     <div id="tab-config" class="tab-continut">
       <button onclick="efectueazaLogout()" style="width:100%; padding:10px; margin-bottom:15px; background:#94a3b8; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">🚪 Deconectare (Logout)</button>
       <button id="btn-adaug-furnizor" class="btn-add-furnizor" onclick="deschideModalFurnizor(-1)">➕ Adaugă Furnizor Nou</button>
@@ -168,7 +175,7 @@
   <!-- Container Notificări Toast -->
   <div id="toast-container"></div>
 
-  <script src="app.js?v=11"></script>
+  <script src="app.js?v=12"></script>
 </body>
 </html>
 

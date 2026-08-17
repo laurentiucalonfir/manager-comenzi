@@ -15,8 +15,11 @@
     const db = firebase.database();
 
     let dateGlobal = [];
+    let istoricComenzi = JSON.parse(localStorage.getItem("istoricComenzi") || "[]");
     let furnizoriVerificati = JSON.parse(localStorage.getItem("furnizoriVerificati") || "{}");
     let furnizoriTrimisi = JSON.parse(localStorage.getItem("furnizoriTrimisi") || "{}");
+    let deschisePanouriEditare = {};
+    let deschisePanouriConfig = {};
     let editareCurentaGlobalIndex = -1;
     let gestiuniSelectate = {};
     let produseSelectate = {};
@@ -148,8 +151,6 @@
     auth.onAuthStateChanged((user) => {
       if (user) {
         document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('titlu-pagina').style.display = 'block';
-        document.getElementById('continut').style.display = 'block';
         incarcaComenzi();
       } else {
         document.getElementById('login-screen').style.display = 'flex';
@@ -179,31 +180,90 @@
 
     function incarcaComenzi() {
       db.ref('comenzi').on('value', (snapshot) => {
-        const raspuns = snapshot.val();
-        if (!raspuns) {
-          dateGlobal = [];
-        } else if (Array.isArray(raspuns)) {
-          dateGlobal = raspuns.filter(x => x !== null);
-        } else if (typeof raspuns === 'object') {
-          dateGlobal = Object.values(raspuns).filter(x => x !== null);
+        document.getElementById("titlu-pagina").style.display = "block";
+        document.getElementById("continut").style.display = "block";
+        document.getElementById("titlu-pagina").innerText = "Manager Comenzi";
+        
+        let date = snapshot.val();
+        if (date && Array.isArray(date)) {
+          dateGlobal = date;
         } else {
           dateGlobal = [];
         }
         
-        document.getElementById("titlu-pagina").innerText = "Manager Comenzi";
-        
         afiseazaToateCardurile(dateGlobal);
-        // Autocomplete se bazeaza mereu pe dateGlobal la momentul tastarii
       }, (error) => {
         // Ignoram eroarea (se deconecteaza)
       });
+
+      db.ref('istoric_comenzi').on('value', (snapshot) => {
+        let ist = snapshot.val();
+        if (ist && Array.isArray(ist)) {
+          istoricComenzi = ist;
+          localStorage.setItem("istoricComenzi", JSON.stringify(istoricComenzi));
+        }
+        afiseazaIstoric();
+      });
     }
 
-    function comutaTab(numeTab) {
-      document.getElementById("tab-btn-comenzi").classList.toggle("activ", numeTab === "comenzi");
-      document.getElementById("tab-btn-config").classList.toggle("activ", numeTab === "config");
-      document.getElementById("tab-comenzi").classList.toggle("activ", numeTab === "comenzi");
-      document.getElementById("tab-config").classList.toggle("activ", numeTab === "config");
+    function comutaTab(tabNume) {
+      document.querySelectorAll('.tab-continut').forEach(el => el.classList.remove('activ'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('activ'));
+      
+      document.getElementById('tab-' + tabNume).classList.add('activ');
+      document.getElementById('tab-btn-' + tabNume).classList.add('activ');
+      
+      if (tabNume === 'istoric') {
+        afiseazaIstoric();
+      }
+    }
+
+    function afiseazaIstoric() {
+        const zona = document.getElementById('zona-carduri-istoric');
+        if (!zona) return;
+        
+        if (istoricComenzi.length === 0) {
+            zona.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8;">Nu există comenzi în istoric.</div>';
+            return;
+        }
+
+        zona.innerHTML = istoricComenzi.map((c, idx) => {
+            let encodedMessage = encodeURIComponent(c.mesaj);
+            let linkWa = "https://wa.me/?text=" + encodedMessage;
+            return `
+            <div class="card-istoric">
+                <div class="card-istoric-header">
+                  <span class="istoric-furnizor">👤 ${escapeHtml(c.furnizor)}</span>
+                  <span class="istoric-data">${new Date(c.data).toLocaleString('ro-RO')}</span>
+                </div>
+                <pre class="istoric-mesaj">${escapeHtml(c.mesaj)}</pre>
+                <a href="${linkWa}" target="_blank" class="btn-retrimite" onclick="retrimiteComandaDinIstoric(${idx})">🔁 Retrimite</a>
+            </div>
+            `;
+        }).join('');
+    }
+
+    function retrimiteComandaDinIstoric(idx) {
+        const c = istoricComenzi[idx];
+        if (!c) return;
+        // La retrimiteri, doar il mutam inapoi sus in istoric cu data noua
+        const intrareNoua = {
+            data: new Date().toISOString(),
+            furnizor: c.furnizor,
+            mesaj: c.mesaj
+        };
+        istoricComenzi.unshift(intrareNoua);
+        if (istoricComenzi.length > 100) istoricComenzi = istoricComenzi.slice(0, 100);
+        localStorage.setItem("istoricComenzi", JSON.stringify(istoricComenzi));
+        firebase.database().ref('istoric_comenzi').set(istoricComenzi);
+        afiseazaIstoric();
+    }
+
+    function stergeTotIstoricul() {
+        istoricComenzi = [];
+        localStorage.removeItem("istoricComenzi");
+        firebase.database().ref('istoric_comenzi').set(istoricComenzi);
+        afiseazaIstoric();
     }
 
     function afiseazaToateCardurile(listeComenzi) {
@@ -569,17 +629,36 @@
       }
     }
 
-    function marcheazaTrimis(numeFurnizor, index) {
-      furnizoriTrimisi[numeFurnizor] = true;
-      try { localStorage.setItem("furnizoriTrimisi", JSON.stringify(furnizoriTrimisi)); } catch(e) {}
-      const card = document.getElementById("card-" + index);
-      const btn = document.getElementById("btn-wa-" + index);
+    function marcheazaTrimis(furnizorNume, globalIndex) {
+      furnizoriTrimisi[furnizorNume] = true;
+      localStorage.setItem("furnizoriTrimisi", JSON.stringify(furnizoriTrimisi));
       
-      if (card) card.classList.add("trimis");
+      const date = dateGlobal[globalIndex];
+      const btn = document.getElementById("btn-wa-" + globalIndex);
       if (btn) {
-        btn.innerText = "Trimis ✅";
-        btn.classList.add("trimis");
+        btn.innerText = "Trimis";
+        btn.style.backgroundColor = "#94a3b8";
+        btn.style.pointerEvents = "none";
       }
+
+      // Adaugare la istoric
+      if (date && date.mesaj && date.mesaj.trim() !== "") {
+        const intrareIstoric = {
+          data: new Date().toISOString(),
+          furnizor: furnizorNume,
+          mesaj: date.mesaj
+        };
+        istoricComenzi.unshift(intrareIstoric);
+        if (istoricComenzi.length > 100) {
+          istoricComenzi = istoricComenzi.slice(0, 100);
+        }
+        localStorage.setItem("istoricComenzi", JSON.stringify(istoricComenzi));
+        firebase.database().ref('istoric_comenzi').set(istoricComenzi);
+        afiseazaIstoric();
+      }
+      
+      const card = document.getElementById("card-" + globalIndex);
+      if (card) card.classList.add("trimis");
     }
 
     function bifeazaVerificare(checkbox, numeFurnizor, index) {
