@@ -171,40 +171,6 @@
         afiseazaIstoric();
     }
 
-    function exportaIstoricExcel() {
-        if (istoricComenzi.length === 0) {
-            arataNotificare("Nu există date de exportat!", "error");
-            return;
-        }
-        
-        // Formatare date pentru Excel
-        const datePentruExcel = istoricComenzi.map(c => {
-            const dateObj = new Date(c.data);
-            return {
-                "Data": dateObj.toLocaleDateString('ro-RO'),
-                "Ora": dateObj.toLocaleTimeString('ro-RO'),
-                "Furnizor": c.furnizor,
-                "Comanda": c.mesaj
-            };
-        });
-
-        // Creare Workbook folosind SheetJS
-        const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.json_to_sheet(datePentruExcel);
-        
-        // Ajustare lățime coloane
-        const wscols = [
-            {wch: 12}, // Data
-            {wch: 10}, // Ora
-            {wch: 25}, // Furnizor
-            {wch: 60}  // Comanda
-        ];
-        ws['!cols'] = wscols;
-
-        XLSX.utils.book_append_sheet(wb, ws, "Istoric");
-        XLSX.writeFile(wb, "Istoric_Comenzi.xlsx");
-        arataNotificare("Export realizat cu succes!", "success");
-    }
 
     // --- DARK MODE LOGIC ---
     let isDarkMode = localStorage.getItem("tema") === "dark";
