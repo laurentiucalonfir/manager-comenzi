@@ -269,8 +269,8 @@
     }
 
     function generareOptiuniCantitateHTML() {
-      return '<option value="0">0 (🗑️ Șterge / Anulează)</option>' +
-        '<option value="1" selected>1</option>' +
+      return '<option value="0" selected>0 (Alege cantitatea / Șterge)</option>' +
+        '<option value="1">1</option>' +
         '<option value="2">2</option>' +
         '<option value="3">3</option>' +
         '<option value="4">4</option>' +
@@ -446,7 +446,7 @@
         if (cantitateExistenta > 0) {
           selCantitate.value = String(cantitateExistenta);
         } else {
-          selCantitate.value = "1";
+          selCantitate.value = "0";
         }
       }
 
