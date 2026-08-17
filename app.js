@@ -331,8 +331,11 @@
       if (globalIndex === -1) return;
       const dateFurnizor = dateGlobal[globalIndex];
       const selGestiune = document.getElementById("modal-sel-gestiune");
+      const selProdus = document.getElementById("modal-sel-produs");
       if (dateFurnizor && selGestiune) {
         gestiuniSelectate[dateFurnizor.furnizor] = Number(selGestiune.value);
+        delete produseSelectate[dateFurnizor.furnizor];
+        if (selProdus) selProdus.value = "";
       }
       actualizeazaProduseModal();
     }
