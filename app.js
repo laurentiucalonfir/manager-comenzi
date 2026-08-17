@@ -116,7 +116,22 @@
     }
 
     function efectueazaLogout() {
-      auth.signOut();
+      firebase.auth().signOut().then(() => {
+        window.location.reload();
+      });
+    }
+
+    function forteazaRefresh() {
+      if (navigator.serviceWorker) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister();
+          }
+          window.location.href = window.location.pathname + '?t=' + new Date().getTime();
+        });
+      } else {
+        window.location.href = window.location.pathname + '?t=' + new Date().getTime();
+      }
     }
 
     function incarcaComenzi() {
