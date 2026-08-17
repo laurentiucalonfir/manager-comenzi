@@ -9,7 +9,7 @@
     
     .card-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
     .card-header:hover .furnizor-name { color: #25D366; }
-    .furnizor-name { font-size: 16px; font-weight: bold; color: #202124; display: flex; align-items: center; gap: 4px; }
+    .furnizor-name { font-size: 16px; font-weight: bold; color: #202124; }
     .chevron-indicator { font-size: 11px; color: #5F6368; margin-left: 4px; }
 
     .checkbox-verificare { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: bold; color: #3C4043; cursor: pointer; }
