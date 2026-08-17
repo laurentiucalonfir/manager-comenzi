@@ -14,7 +14,7 @@
 
   <title>Manager Comenzi</title>
 
-  <link rel="stylesheet" href="style.css?v=31">
+  <link rel="stylesheet" href="style.css?v=32">
   
   <!-- Firebase Compat Web SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -146,13 +146,12 @@
         </div>
         <div class="form-group" style="margin-top:10px;">
           <label>Cantitate (0 = Ștergere)</label>
-          <select id="modal-inp-cantitate" class="form-control" onchange="actualizeazaStilButonModal()">
+          <select id="modal-inp-cantitate" class="form-control" onchange="trimiteCantitateModal()">
           </select>
         </div>
       </div>
       <div class="modal-actions">
-        <button id="modal-btn-salveaza" class="btn-modal btn-modal-save" onclick="trimiteCantitateModal()">💾 Salvează</button>
-        <button class="btn-modal btn-modal-cancel" onclick="inchideModalEditare()">Închide</button>
+        <button class="btn-modal btn-modal-save" style="width: 100%;" onclick="inchideModalEditare()">✅ Gata</button>
       </div>
     </div>
   </div>
@@ -160,6 +159,6 @@
   <!-- Container Notificări Toast -->
   <div id="toast-container"></div>
 
-  <script src="app.js?v=31"></script>
+  <script src="app.js?v=32"></script>
 </body>
 </html>

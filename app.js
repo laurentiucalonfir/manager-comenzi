@@ -450,23 +450,8 @@
         }
       }
 
-      actualizeazaStilButonModal();
     }
 
-    function actualizeazaStilButonModal() {
-      const selCantitate = document.getElementById("modal-inp-cantitate");
-      const btnMain = document.getElementById("modal-btn-salveaza");
-      if (!selCantitate || !btnMain) return;
-
-      const cantVal = Number(selCantitate.value);
-      if (cantVal === 0) {
-        btnMain.innerText = "🗑️ Șterge";
-        btnMain.classList.add("btn-sterge");
-      } else {
-        btnMain.innerText = "💾 Salvează";
-        btnMain.classList.remove("btn-sterge");
-      }
-    }
 
     function marcheazaTrimis(furnizorNume, globalIndex) {
       furnizoriTrimisi[furnizorNume] = true;
