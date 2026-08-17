@@ -43,7 +43,7 @@
       const termen = (document.getElementById('search-bar').value || '').toLowerCase();
       const toateCardurile = document.querySelectorAll('.card');
       toateCardurile.forEach(card => {
-        const numeFurnizor = card.querySelector('.furnizor-name').innerText.toLowerCase();
+        const numeFurnizor = card.querySelector('.furnizor-name').textContent.toLowerCase();
         if (numeFurnizor.includes(termen)) {
           card.style.display = '';
         } else {
