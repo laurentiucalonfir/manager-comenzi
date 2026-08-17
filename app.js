@@ -18,8 +18,6 @@
     let istoricComenzi = JSON.parse(localStorage.getItem("istoricComenzi") || "[]");
     let furnizoriVerificati = JSON.parse(localStorage.getItem("furnizoriVerificati") || "{}");
     let furnizoriTrimisi = JSON.parse(localStorage.getItem("furnizoriTrimisi") || "{}");
-    let deschisePanouriEditare = {};
-    let deschisePanouriConfig = {};
     let editareCurentaGlobalIndex = -1;
     let gestiuniSelectate = {};
     let produseSelectate = {};
