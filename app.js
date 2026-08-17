@@ -967,7 +967,7 @@
 
       afiseazaToateCardurile(dateGlobal);
 
-      // setTimeout(() => { arataNotificare("Finalizat", "success"); }, 1500); // Oprit la cerere
+      setTimeout(() => { arataNotificare("Finalizat", "success"); }, 1500);
 
       firebase.database().ref('comenzi').set(dateGlobal).catch(err => {
         arataNotificare("❌ Eroare la resetare în Firebase!", "error");
