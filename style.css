@@ -215,3 +215,21 @@ body.dark-mode #login-box {
   color: #f8fafc;
   border: 1px solid #334155;
 }
+body.dark-mode h2, 
+body.dark-mode .furnizor-name, 
+body.dark-mode .modal-title, 
+body.dark-mode #login-box h3 {
+  color: #f8fafc;
+}
+body.dark-mode .checkbox-verificare,
+body.dark-mode .sectiune-titlu,
+body.dark-mode .form-group label,
+body.dark-mode .modal-body label,
+body.dark-mode .incarcare-status {
+  color: #cbd5e1;
+}
+body.dark-mode pre {
+  background: #334155;
+  color: #e2e8f0;
+  border-color: #475569;
+}
