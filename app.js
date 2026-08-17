@@ -197,7 +197,7 @@
 
         headerHTML = 
           '<div class="card-header" onclick="deschideModalEditareComanda(' + globalIndex + ')">' +
-            '<div class="furnizor-name">👤 ' + escapeHtml(date.furnizor) + '<small style="font-weight:normal; color:#64748b;">' + infoTel + '</small></div>' +
+            '<div class="furnizor-name">🏢 ' + escapeHtml(date.furnizor) + ' <small style="font-weight:normal; color:#5F6368;">' + infoTel + '</small></div>' +
             '<div style="font-size: 13px; color: #2563eb; font-weight: bold;">✏️ Adaugă</div>' +
           '</div>';
         
@@ -235,7 +235,7 @@
 
       let headerHTML = 
         '<div class="card-header" onclick="comutaPanouConfig(' + globalIndex + ')">' +
-          '<div class="furnizor-name">👤 ' + escapeHtml(date.furnizor) + '<small style="font-weight:normal; color:#64748b;">' + infoTel + '</small> <span class="chevron-indicator" id="chevron-cfg-' + globalIndex + '">' + chevronIcon + '</span></div>' +
+          '<div class="furnizor-name">🏢 ' + escapeHtml(date.furnizor) + ' <small style="font-weight:normal; color:#5F6368;">' + infoTel + '</small> <span class="chevron-indicator" id="chevron-cfg-' + globalIndex + '">' + chevronIcon + '</span></div>' +
         '</div>';
 
       let bodyHTML = 
