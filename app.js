@@ -39,96 +39,68 @@
       }, 3000);
     }
 
-    function initializeazaAutocomplete() {
-      const input = document.getElementById('search-bar');
-      const dropdown = document.getElementById('search-dropdown');
-
-      input.addEventListener('input', function() {
-        const termen = this.value.toLowerCase().trim();
-        dropdown.innerHTML = '';
-
-        if (termen === '') {
-          dropdown.style.display = 'none';
-          return;
-        }
-
-        let rezultate = [];
-        dateGlobal.forEach((furnizor, index) => {
-          let numeMatch = furnizor.furnizor.toLowerCase().includes(termen);
-          let produseMatched = [];
-
-          if (furnizor.produseFormular) {
-            furnizor.produseFormular.forEach(p => {
-              if (p.produs.toLowerCase().includes(termen)) {
-                produseMatched.push(p.produs);
-              }
-            });
-          }
-
-          if (numeMatch || produseMatched.length > 0) {
-            rezultate.push({
-              index: index,
-              furnizor: furnizor.furnizor,
-              produseMatched: produseMatched
-            });
-          }
-        });
-
-        if (rezultate.length === 0) {
-          dropdown.style.display = 'block';
-          dropdown.innerHTML = '<div class="search-item"><span style="color:#ef4444;">Niciun rezultat găsit.</span></div>';
-          return;
-        }
-
-        rezultate.forEach(rez => {
-          const div = document.createElement('div');
-          div.className = 'search-item';
-          
-          let htmlContent = '<div>';
-          htmlContent += '<strong>👤 ' + escapeHtml(rez.furnizor) + '</strong>';
-          
-          if (rez.produseMatched.length > 0) {
-            htmlContent += '<br><span style="color:#059669; font-weight:bold;">🛒 ' + escapeHtml(rez.produseMatched.join(", ")) + '</span>';
-          }
-          htmlContent += '</div>';
-
-          div.innerHTML = htmlContent;
-          
-          div.addEventListener('click', function() {
-            input.value = '';
-            dropdown.style.display = 'none';
-            input.blur();
-            
-            const tabComenzi = document.getElementById('tab-btn-comenzi').classList.contains('activ');
-            if (tabComenzi) {
-              deschideModalEditareComanda(rez.index);
-            } else {
-              // Daca panoul e inchis, il deschidem
-              if (!deschisePanouriConfig[rez.furnizor]) {
-                 comutaPanouConfig(rez.index);
-              }
-              const targetCard = document.getElementById('panel-cfg-' + rez.index);
-              if (targetCard && targetCard.parentElement) {
-                targetCard.parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              }
+    function populeazaDropdownProduse() {
+      const select = document.getElementById("search-produs");
+      const valoareSelectata = select.value;
+      
+      let toateProdusele = new Set();
+      
+      dateGlobal.forEach(furnizor => {
+        if (furnizor.produseFormular) {
+          furnizor.produseFormular.forEach(p => {
+            if (p.produs && p.produs.trim() !== "") {
+              toateProdusele.add(p.produs.trim());
             }
           });
-
-          dropdown.appendChild(div);
-        });
-
-        dropdown.style.display = 'block';
-      });
-
-      document.addEventListener('click', function(e) {
-        if (!document.querySelector('.search-container').contains(e.target)) {
-          dropdown.style.display = 'none';
         }
       });
       
-      input.addEventListener('focus', function() {
-        if (this.value.trim() !== '') {
-          dropdown.style.display = 'block';
+      let produseSortate = Array.from(toateProdusele).sort((a, b) => a.localeCompare(b));
+      
+      let html = '<option value="">Alege Produs...</option>';
+      produseSortate.forEach(prod => {
+        html += '<option value="' + escapeHtml(prod) + '">' + escapeHtml(prod) + '</option>';
+      });
+      
+      select.innerHTML = html;
+      
+      // Reselect the previous value if it still exists
+      if (produseSortate.includes(valoareSelectata)) {
+        select.value = valoareSelectata;
+      }
+    }
+
+    function aplicaFiltreGlobale() {
+      const termenFurnizor = (document.getElementById('search-bar').value || '').toLowerCase().trim();
+      const termenProdus = (document.getElementById('search-produs').value || '').toLowerCase().trim();
+      
+      const toateCardurile = document.querySelectorAll('.card');
+      
+      toateCardurile.forEach(card => {
+        const globalIndex = card.getAttribute('data-index');
+        if (globalIndex === null) return;
+        
+        const dateFurnizor = dateGlobal[globalIndex];
+        
+        // 1. Filtru Furnizor (text)
+        let matchFurnizor = true;
+        if (termenFurnizor !== '') {
+          matchFurnizor = dateFurnizor.furnizor.toLowerCase().includes(termenFurnizor);
+        }
+        
+        // 2. Filtru Produs (dropdown exact)
+        let matchProdus = true;
+        if (termenProdus !== '') {
+          matchProdus = false;
+          if (dateFurnizor.produseFormular) {
+            matchProdus = dateFurnizor.produseFormular.some(p => p.produs.toLowerCase().trim() === termenProdus);
+          }
+        }
+        
+        if (matchFurnizor && matchProdus) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
         }
       });
     }
@@ -182,7 +154,8 @@
         document.getElementById("titlu-pagina").innerText = "Manager Comenzi";
         
         afiseazaToateCardurile(dateGlobal);
-        // Autocomplete se bazeaza pe dateGlobal, deci e mereu valid
+        populeazaDropdownProduse();
+        aplicaFiltreGlobale();
       }, (error) => {
         // Ignoram eroarea (se deconecteaza)
       });
@@ -1021,4 +994,4 @@
       });
     }
 
-    document.addEventListener("DOMContentLoaded", initializeazaAutocomplete);
+
