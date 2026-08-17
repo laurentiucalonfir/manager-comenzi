@@ -43,8 +43,8 @@
       const termen = (document.getElementById('search-bar').value || '').toLowerCase();
       const toateCardurile = document.querySelectorAll('.card');
       toateCardurile.forEach(card => {
-        const numeFurnizor = card.querySelector('.furnizor-name').textContent.toLowerCase();
-        if (numeFurnizor.includes(termen)) {
+        const textCautare = (card.getAttribute('data-cautare') || '').toLowerCase();
+        if (textCautare.includes(termen)) {
           card.style.display = '';
         } else {
           card.style.display = 'none';
@@ -101,7 +101,7 @@
         afiseazaToateCardurile(dateGlobal);
         filtreazaFurnizori(); // reaplica filtrul
       }, (error) => {
-        arataNotificare("❌ Eroare la conectarea cu Firebase: " + error.message, "error");
+        // Ignoram eroarea (se deconecteaza)
       });
     }
 
@@ -190,6 +190,12 @@
       const card = document.createElement("div");
       const textEnc = encodeURIComponent(date.mesaj);
 
+      let textCautare = date.furnizor + " ";
+      if (date.produseFormular) {
+        date.produseFormular.forEach(p => textCautare += p.produs + " ");
+      }
+      card.setAttribute("data-cautare", textCautare);
+
       let headerHTML = "";
       let corpHTML = "";
 
@@ -237,6 +243,12 @@
       const chevronIcon = esteDeschis ? "▲" : "▼";
       card.className = "card";
       card.style.borderLeftColor = "#3b82f6";
+
+      let textCautare = date.furnizor + " ";
+      if (date.produseFormular) {
+        date.produseFormular.forEach(p => textCautare += p.produs + " ");
+      }
+      card.setAttribute("data-cautare", textCautare);
 
       let infoTel = date.telefon ? (" (" + escapeHtml(date.telefon) + ")") : "";
 
@@ -572,7 +584,7 @@
       // Update the modal UI immediately to reflect the change visually
       populeazaDropdownuriModal();
 
-      arataNotificare("⚡ Salvat în Firebase!", "success");
+      // arataNotificare("⚡ Salvat în Firebase!", "success"); // Oprit la cerere
 
       firebase.database().ref('comenzi/' + globalIndex).set(dateFurnizor).catch(err => {
         arataNotificare("❌ Eroare la sincronizare cu Firebase!", "error");
@@ -892,7 +904,7 @@
     }
 
     function salveazaFurnizorInFirebase(globalIndex) {
-      arataNotificare("⚡ Salvat în Firebase!", "success");
+      // arataNotificare("⚡ Salvat în Firebase!", "success"); // Oprit la cerere
 
       firebase.database().ref('comenzi/' + globalIndex).set(dateGlobal[globalIndex]);
     }
