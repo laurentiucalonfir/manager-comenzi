@@ -34,17 +34,17 @@
     #btn-reset-global:active { transform: translateY(1px); }
     
     .btn-add-furnizor { padding: 10px; font-size: 13px; background-color:#3b82f6; color:white; border:none; border-radius:8px; font-weight:bold; width:100%; margin-bottom:15px; cursor:pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: all 0.2s ease; }
-    .btn-add-furnizor:hover { background-color: #6366f1; }
+    .btn-add-furnizor:hover { background-color: #2563eb; }
 
-    .btn-subtle { background: none; border: none; color: #6366f1; font-size: 12px; font-weight: bold; cursor: pointer; padding: 3px 0 0 0; margin-top: 1px; text-align: left; display: inline-block; text-decoration: underline; }
-    .btn-subtle:hover { color: #4f46e5; }
+    .btn-subtle { background: none; border: none; color: #2563eb; font-size: 12px; font-weight: bold; cursor: pointer; padding: 3px 0 0 0; margin-top: 1px; text-align: left; display: inline-block; text-decoration: underline; }
+    .btn-subtle:hover { color: #1d4ed8; }
     .btn-subtle-danger { color: #ef4444 !important; }
     .btn-subtle-danger:hover { color: #dc2626 !important; }
 
     .btn-cfg { display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 8px 14px; font-size: 13px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
     .btn-cfg:active { transform: translateY(1px); }
-    .btn-cfg-add { background-color: #6366f1; color: white; }
-    .btn-cfg-add:hover { background-color: #4f46e5; }
+    .btn-cfg-add { background-color: #2563eb; color: white; }
+    .btn-cfg-add:hover { background-color: #1d4ed8; }
     .btn-cfg-edit { background-color: #f59e0b; color: white; }
     .btn-cfg-edit:hover { background-color: #d97706; }
     .btn-cfg-danger { background-color: #ef4444; color: white; }
@@ -61,7 +61,7 @@
 
     .nav-tabs { display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
     .tab-btn { flex: 1; padding: 12px 0; border: none; background: #f1f5f9; color: #475569; font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 14px; transition: all 0.2s ease; }
-    .tab-btn.activ { background: #6366f1; color: white; box-shadow: 0 2px 6px rgba(37,99,235,0.25); }
+    .tab-btn.activ { background: #2563eb; color: white; box-shadow: 0 2px 6px rgba(37,99,235,0.25); }
     .tab-continut { display: none; }
     .tab-continut.activ { display: block; }
 
@@ -72,11 +72,11 @@
     .modal-body { margin-bottom: 15px; text-align: left; }
     .modal-body label { display: block; font-size: 11px; font-weight: bold; color: #64748b; margin-bottom: 4px; text-transform: uppercase; }
     .modal-body input { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; box-sizing: border-box; margin-bottom: 10px; background: #ffffff; }
-    .modal-body input:focus { border-color: #6366f1; background: white; outline: none; }
+    .modal-body input:focus { border-color: #2563eb; background: white; outline: none; }
     .modal-actions { display: flex; gap: 10px; margin-top: 15px; }
     .btn-modal { flex: 1; padding: 12px 0; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
-    .btn-modal-save { background: #6366f1; color: white; }
-    .btn-modal-save:hover { background: #4f46e5; }
+    .btn-modal-save { background: #2563eb; color: white; }
+    .btn-modal-save:hover { background: #1d4ed8; }
     .btn-modal-cancel { background: #9ca3af; color: white; }
     .btn-modal-cancel:hover { background: #64748b; }
     .btn-modal-danger { background: #ef4444; color: white; }
@@ -86,8 +86,8 @@
     #login-box { background: white; padding: 30px; border-radius: 14px; width: 100%; max-width: 380px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
     #login-box h3 { text-align: center; color: #0f172a; margin-top: 0; }
     #login-box input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 15px; box-sizing: border-box; }
-    #login-box button { width: 100%; padding: 12px; background: #6366f1; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; }
-    #login-box button:hover { background: #4f46e5; }
+    #login-box button { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; }
+    #login-box button:hover { background: #1d4ed8; }
     #login-error { color: #ef4444; font-size: 13px; text-align: center; margin-bottom: 10px; display: none; }
     
     .search-container { position: relative; margin-bottom: 15px; width: 100%; z-index: 50; }
@@ -177,8 +177,8 @@ body.dark-mode .tab-btn {
   color: #9ca3af;
 }
 body.dark-mode .tab-btn.activ {
-  color: #818cf8;
-  border-bottom: 2px solid #818cf8;
+  color: #3b82f6;
+  border-bottom: 2px solid #3b82f6;
 }
 body.dark-mode .card, body.dark-mode .card-istoric {
   background: #18181b;
