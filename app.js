@@ -918,7 +918,7 @@
 
     function reseteazaMecanic() {
       inchideModalConfirmare();
-      arataNotificare("⚡ Toate cantitățile au fost resetate în Firebase!", "success");
+      // arataNotificare("⚡ Toate cantitățile au fost resetate în Firebase!", "success"); // Oprit la cerere
 
       furnizoriVerificati = {};
       furnizoriTrimisi = {};
@@ -940,7 +940,7 @@
 
       afiseazaToateCardurile(dateGlobal);
 
-      setTimeout(() => { arataNotificare("Finalizat", "success"); }, 1500);
+      // setTimeout(() => { arataNotificare("Finalizat", "success"); }, 1500); // Oprit la cerere
 
       firebase.database().ref('comenzi').set(dateGlobal).catch(err => {
         arataNotificare("❌ Eroare la resetare în Firebase!", "error");
