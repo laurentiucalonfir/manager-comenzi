@@ -14,12 +14,15 @@
 
   <title>Manager Comenzi</title>
 
-  <link rel="stylesheet" href="style.css?v=15">
+  <link rel="stylesheet" href="style.css?v=16">
   
   <!-- Firebase Compat Web SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+  
+  <!-- SheetJS pentru export Excel -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -34,7 +37,10 @@
     </div>
   </div>
 
-  <h2 id="titlu-pagina" style="display:none;">📦 Se încarcă...</h2>
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+    <h1 id="titlu-pagina" style="display:none; margin:0;"></h1>
+    <button id="btn-tema" onclick="comutaTema()" style="background:transparent; border:none; font-size:24px; cursor:pointer; display:none;">☀️</button>
+  </div>
   
   <div id="continut" style="display:none;">
     
@@ -52,7 +58,13 @@
 
     <!-- TAB 2: ISTORIC -->
     <div id="tab-istoric" class="tab-continut">
-      <button id="btn-reset-istoric" onclick="deschideModalStergere('Sigur doriți să ștergeți tot istoricul?', stergeTotIstoricul)" style="width:100%; padding:10px; margin-bottom:15px; background:#ef4444; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">🗑️ Șterge Istoricul</button>
+      <input type="text" id="search-istoric" placeholder="Caută furnizor în istoric..." oninput="afiseazaIstoric()" style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px; border:1px solid #cbd5e1; box-sizing:border-box;">
+      
+      <div style="display:flex; gap:10px; margin-bottom:15px;">
+        <button id="btn-export-istoric" onclick="exportaIstoricExcel()" style="flex:1; padding:10px; background:#10b981; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">📥 Export Excel</button>
+        <button id="btn-reset-istoric" onclick="deschideModalStergere('Sigur doriți să ștergeți tot istoricul?', stergeTotIstoricul)" style="flex:1; padding:10px; background:#ef4444; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">🗑️ Șterge Istoricul</button>
+      </div>
+      
       <div id="zona-carduri-istoric"></div>
     </div>
 
@@ -167,7 +179,7 @@
   <!-- Container Notificări Toast -->
   <div id="toast-container"></div>
 
-  <script src="app.js?v=15"></script>
+  <script src="app.js?v=16"></script>
 </body>
 </html>
 

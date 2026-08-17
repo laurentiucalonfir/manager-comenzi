@@ -115,12 +115,19 @@
         const zona = document.getElementById('zona-carduri-istoric');
         if (!zona) return;
         
-        if (istoricComenzi.length === 0) {
-            zona.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8;">Nu există comenzi în istoric.</div>';
+        let istoricFiltrat = istoricComenzi;
+        const searchInput = document.getElementById('search-istoric');
+        if (searchInput && searchInput.value.trim() !== "") {
+            const termen = searchInput.value.toLowerCase().trim();
+            istoricFiltrat = istoricComenzi.filter(c => c.furnizor.toLowerCase().includes(termen));
+        }
+        
+        if (istoricFiltrat.length === 0) {
+            zona.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8;">Nu există comenzi în istoric conform căutării.</div>';
             return;
         }
 
-        zona.innerHTML = istoricComenzi.map((c, idx) => {
+        zona.innerHTML = istoricFiltrat.map((c, idx) => {
             let encodedMessage = encodeURIComponent(c.mesaj);
             let numarTelefon = c.telefon ? c.telefon.replace(/[^0-9]/g, '') : "";
             if (numarTelefon && !numarTelefon.startsWith("40") && numarTelefon.length === 10) {
@@ -163,6 +170,63 @@
         firebase.database().ref('istoric_comenzi').set(istoricComenzi);
         afiseazaIstoric();
     }
+
+    function exportaIstoricExcel() {
+        if (istoricComenzi.length === 0) {
+            arataNotificare("Nu există date de exportat!", "error");
+            return;
+        }
+        
+        // Formatare date pentru Excel
+        const datePentruExcel = istoricComenzi.map(c => {
+            const dateObj = new Date(c.data);
+            return {
+                "Data": dateObj.toLocaleDateString('ro-RO'),
+                "Ora": dateObj.toLocaleTimeString('ro-RO'),
+                "Furnizor": c.furnizor,
+                "Comanda": c.mesaj
+            };
+        });
+
+        // Creare Workbook folosind SheetJS
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet(datePentruExcel);
+        
+        // Ajustare lățime coloane
+        const wscols = [
+            {wch: 12}, // Data
+            {wch: 10}, // Ora
+            {wch: 25}, // Furnizor
+            {wch: 60}  // Comanda
+        ];
+        ws['!cols'] = wscols;
+
+        XLSX.utils.book_append_sheet(wb, ws, "Istoric");
+        XLSX.writeFile(wb, "Istoric_Comenzi.xlsx");
+        arataNotificare("Export realizat cu succes!", "success");
+    }
+
+    // --- DARK MODE LOGIC ---
+    let isDarkMode = localStorage.getItem("tema") === "dark";
+    
+    function aplicaTema() {
+        if (isDarkMode) {
+            document.body.classList.add("dark-mode");
+            document.getElementById("btn-tema").innerText = "🌙";
+        } else {
+            document.body.classList.remove("dark-mode");
+            document.getElementById("btn-tema").innerText = "☀️";
+        }
+        document.getElementById("btn-tema").style.display = "block";
+    }
+
+    function comutaTema() {
+        isDarkMode = !isDarkMode;
+        localStorage.setItem("tema", isDarkMode ? "dark" : "light");
+        aplicaTema();
+    }
+    
+    document.addEventListener("DOMContentLoaded", aplicaTema);
 
     function afiseazaToateCardurile(listeComenzi) {
       const zonaComenzi = document.getElementById("zona-carduri-comenzi");

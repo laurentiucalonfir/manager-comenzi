@@ -164,3 +164,54 @@
 .btn-retrimite:active {
   transform: scale(0.98);
 }
+
+/* DARK MODE */
+body.dark-mode {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+body.dark-mode .nav-tabs {
+  background: #1e293b;
+}
+body.dark-mode .tab-btn {
+  color: #94a3b8;
+}
+body.dark-mode .tab-btn.activ {
+  color: #38bdf8;
+  border-bottom: 2px solid #38bdf8;
+}
+body.dark-mode .card, body.dark-mode .card-istoric {
+  background: #1e293b;
+  border: 1px solid #334155;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+}
+body.dark-mode .card-header, body.dark-mode .istoric-furnizor {
+  color: #f1f5f9;
+}
+body.dark-mode .istoric-mesaj {
+  background: #334155;
+  color: #e2e8f0;
+}
+body.dark-mode .form-control {
+  background: #0f172a;
+  color: #f8fafc;
+  border: 1px solid #334155;
+}
+body.dark-mode input[type=text] {
+  background: #0f172a;
+  color: #f8fafc;
+  border: 1px solid #334155;
+}
+body.dark-mode .produs-rand {
+  background: #0f172a;
+}
+body.dark-mode .modal-content {
+  background: #1e293b;
+  color: #f8fafc;
+  border: 1px solid #334155;
+}
+body.dark-mode #login-box {
+  background: #1e293b;
+  color: #f8fafc;
+  border: 1px solid #334155;
+}
