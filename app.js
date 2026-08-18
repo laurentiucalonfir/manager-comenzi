@@ -563,7 +563,7 @@
           }
         }
         textMesaj = textMesaj.replace(/\n\n+/g, '\n\n').trim() + `\n\nMulțumesc!`;
-        textDoarProduse = textDoarProduse.trim();
+        textDoarProduse = textDoarProduse.replace(/✅ /g, '').replace(/\*/g, '').replace(/📍 /g, '').trim();
       }
 
       dateFurnizor.areProduse = areProduse;
