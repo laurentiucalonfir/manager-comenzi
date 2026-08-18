@@ -349,6 +349,17 @@
         produseSelectate[dateFurnizor.furnizor] = Number(selProdus.value);
       }
       schimbaOptiuneCantitateModal();
+      
+      // Attempt to focus and open the quantity select
+      setTimeout(() => {
+        const selCantitate = document.getElementById("modal-inp-cantitate");
+        if (selCantitate) {
+          selCantitate.focus();
+          // Dispatch events to try and trigger native picker
+          const event = new MouseEvent('mousedown', { view: window, bubbles: true, cancelable: true });
+          selCantitate.dispatchEvent(event);
+        }
+      }, 50);
     }
 
     function populeazaDropdownuriModal() {
