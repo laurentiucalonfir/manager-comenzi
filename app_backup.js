@@ -268,23 +268,28 @@
       return card;
     }
 
-    function renderGridCantitate(valoareCurenta = 0) {
-      const valori = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 20, 30];
-      let html = "";
-      valori.forEach(v => {
-        let isActive = (v === valoareCurenta) ? " active" : "";
-        let isZero = (v === 0) ? " zero" : "";
-        let text = (v === 0) ? "🗑️" : v;
-        html += '<button class="btn-cantitate' + isActive + isZero + '" onclick="seteazaCantitateDinGrid(' + v + ')">' + text + '</button>';
-      });
-      document.getElementById("modal-grid-cantitate").innerHTML = html;
-    }
-    
-    function seteazaCantitateDinGrid(valoare) {
-      // Re-render grid for visual active state
-      renderGridCantitate(valoare);
-      // Trigger save automatically
-      trimiteCantitateModal(valoare);
+    function generareOptiuniCantitateHTML() {
+      return '<option value="0" selected>0 (Alege cantitatea / Șterge)</option>' +
+        '<option value="1">1</option>' +
+        '<option value="2">2</option>' +
+        '<option value="3">3</option>' +
+        '<option value="4">4</option>' +
+        '<option value="5">5</option>' +
+        '<option value="6">6</option>' +
+        '<option value="7">7</option>' +
+        '<option value="8">8</option>' +
+        '<option value="9">9</option>' +
+        '<option value="10">10</option>' +
+        '<option value="11">11</option>' +
+        '<option value="12">12</option>' +
+        '<option value="13">13</option>' +
+        '<option value="14">14</option>' +
+        '<option value="15">15</option>' +
+        '<option value="20">20</option>' +
+        '<option value="25">25</option>' +
+        '<option value="30">30</option>' +
+        '<option value="35">35</option>' +
+        '<option value="40">40</option>';
     }
 
     function deschideModalEditareComanda(globalIndex, preselectRandIndex = null) {
@@ -293,7 +298,7 @@
       editareCurentaGlobalIndex = globalIndex;
       
       document.getElementById('modal-editare-titlu').innerText = "📦 " + date.furnizor;
-      renderGridCantitate(0);
+      document.getElementById('modal-inp-cantitate').innerHTML = generareOptiuniCantitateHTML();
       
       const overlay = document.getElementById("modal-editare-comanda");
       overlay.style.display = "flex";
@@ -344,6 +349,17 @@
         produseSelectate[dateFurnizor.furnizor] = Number(selProdus.value);
       }
       schimbaOptiuneCantitateModal();
+      
+      // Attempt to focus and open the quantity select
+      setTimeout(() => {
+        const selCantitate = document.getElementById("modal-inp-cantitate");
+        if (selCantitate) {
+          selCantitate.focus();
+          // Dispatch events to try and trigger native picker
+          const event = new MouseEvent('mousedown', { view: window, bubbles: true, cancelable: true });
+          selCantitate.dispatchEvent(event);
+        }
+      }, 50);
     }
 
     function populeazaDropdownuriModal() {
@@ -429,7 +445,8 @@
       const dateFurnizor = dateGlobal[globalIndex];
       const selGestiune = document.getElementById("modal-sel-gestiune");
       const selProdus = document.getElementById("modal-sel-produs");
-      if (!selGestiune || !selProdus || !dateFurnizor) return;
+      const selCantitate = document.getElementById("modal-inp-cantitate");
+      if (!selGestiune || !selProdus || !selCantitate || !dateFurnizor) return;
 
       const colGestiuneSelectata = Number(selGestiune.value);
       const randProdus = Number(selProdus.value);
@@ -438,13 +455,12 @@
       if (pObj) {
         let cantitateExistenta = obtineCantitateGestiune(pObj, colGestiuneSelectata);
         if (cantitateExistenta > 0) {
-          renderGridCantitate(cantitateExistenta);
+          selCantitate.value = String(cantitateExistenta);
         } else {
-          renderGridCantitate(0);
+          selCantitate.value = "0";
         }
-      } else {
-        renderGridCantitate(0);
       }
+
     }
 
 
@@ -534,7 +550,7 @@
       afiseazaToateCardurile(dateGlobal);
     }
 
-    function trimiteCantitateModal(valoareCantitate) {
+    function trimiteCantitateModal() {
       const globalIndex = editareCurentaGlobalIndex;
       if (globalIndex === -1) return;
       const dateFurnizor = dateGlobal[globalIndex];
@@ -542,11 +558,12 @@
 
       const selGestiune = document.getElementById("modal-sel-gestiune");
       const selProdus = document.getElementById("modal-sel-produs");
+      const selCantitate = document.getElementById("modal-inp-cantitate");
 
       const numeFurnizor = dateFurnizor.furnizor;
       const randIndex = Number(selProdus ? selProdus.value : 0);
       const coloanaIndex = Number(selGestiune ? selGestiune.value : 0);
-      const cantitate = Number(valoareCantitate);
+      const cantitate = Number(selCantitate ? selCantitate.value : 0);
 
       if(!randIndex) {
         arataNotificare("Alegeți un produs valid!", "error");
