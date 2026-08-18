@@ -195,6 +195,7 @@
       function creeazaCardFurnizorComenzi(date, globalIndex) {
         const card = document.createElement("div");
         const textEnc = encodeURIComponent(date.mesaj);
+        const textDoarProduseEnc = encodeURIComponent(date.mesajDoarProduse || date.mesaj);
         const furnizorEnc = encodeURIComponent(date.furnizor);
   
         card.setAttribute("data-index", globalIndex);
@@ -217,7 +218,7 @@
             if (!urlDest.startsWith('http')) urlDest = 'https://' + urlDest;
             linkActiune = urlDest;
             textButon = esteTrimis ? "Trimis ✔" : "🌐 Deschide Website";
-            onclickFunc = "copiazaMesajSiMarcheaza('" + textEnc + "', '" + furnizorEnc + "', " + globalIndex + ")";
+            onclickFunc = "copiazaMesajSiMarcheaza('" + textDoarProduseEnc + "', '" + furnizorEnc + "', " + globalIndex + ")";
           } else {
             linkActiune = date.telefon ? ("https://wa.me/" + date.telefon + "?text=" + textEnc) : ("https://wa.me/?text=" + textEnc);
             textButon = esteTrimis ? "Trimis ✔" : "💬 Trimite pe WhatsApp";
@@ -545,23 +546,29 @@
       });
 
       let textMesaj = "";
+      let textDoarProduse = "";
       if (areProduse) {
         textMesaj = `Bună ziua! Doresc să plasez o comandă pentru următoarele produse:\n`;
         for (let grup in structura) {
           if (structura[grup].length > 0) {
             if (grup === "SIMPLU") {
               textMesaj += `\n` + structura[grup].join("\n") + `\n`;
+              textDoarProduse += structura[grup].join("\n") + `\n`;
             } else {
               textMesaj += `\n📍 *PENTRU ${grup.toUpperCase()}:*\n`;
               textMesaj += structura[grup].join("\n") + `\n`;
+              textDoarProduse += `📍 *PENTRU ${grup.toUpperCase()}:*\n`;
+              textDoarProduse += structura[grup].join("\n") + `\n`;
             }
           }
         }
         textMesaj = textMesaj.replace(/\n\n+/g, '\n\n').trim() + `\n\nMulțumesc!`;
+        textDoarProduse = textDoarProduse.trim();
       }
 
       dateFurnizor.areProduse = areProduse;
       dateFurnizor.mesaj = textMesaj;
+      dateFurnizor.mesajDoarProduse = textDoarProduse;
       
       afiseazaToateCardurile(dateGlobal);
     }
