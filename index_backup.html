@@ -14,7 +14,7 @@
 
   <title>Manager Comenzi</title>
 
-  <link rel="stylesheet" href="style.css?v=34">
+  <link rel="stylesheet" href="style.css?v=39">
   
   <!-- Firebase Compat Web SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -75,8 +75,8 @@
       <div class="modal-body">
         <label>Nume Furnizor</label>
         <input type="text" id="m-furnizor-nume" placeholder="ex: Cola, Avitop">
-        <label>Telefon (Opțional, cu 40...)</label>
-        <input type="text" id="m-furnizor-telefon" placeholder="ex: 40712345678">
+        <label>Telefon WhatsApp / Link Website (Opțional)</label>
+        <input type="text" id="m-furnizor-telefon" placeholder="ex: 407... sau www.site.ro">
       </div>
       <div class="modal-actions">
         <button class="btn-modal btn-modal-save" onclick="salveazaModalFurnizor()">💾 Salvează</button>
@@ -145,9 +145,8 @@
           <select id="modal-sel-produs" class="form-control" onchange="schimbaProdusModal()"></select>
         </div>
         <div class="form-group" style="margin-top:10px;">
-          <label>Cantitate (0 = Ștergere)</label>
-          <select id="modal-inp-cantitate" class="form-control" onchange="trimiteCantitateModal()">
-          </select>
+          <label>Cantitate</label>
+          <div id="modal-grid-cantitate" class="cantitate-grid"></div>
         </div>
       </div>
       <div class="modal-actions">
@@ -159,6 +158,6 @@
   <!-- Container Notificări Toast -->
   <div id="toast-container"></div>
 
-  <script src="app.js?v=34"></script>
+  <script src="app.js?v=39"></script>
 </body>
 </html>
