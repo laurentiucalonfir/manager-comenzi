@@ -78,6 +78,11 @@
         
         let date = snapshot.val();
         if (date && Array.isArray(date)) {
+          date.forEach(f => {
+            if (f.produseFormular) {
+              f.produseFormular.sort((a, b) => a.produs.localeCompare(b.produs));
+            }
+          });
           dateGlobal = date;
         } else {
           dateGlobal = [];
@@ -819,6 +824,8 @@
           pObj.ambalaj = 1;
         }
       }
+
+      dateFurnizor.produseFormular.sort((a, b) => a.produs.localeCompare(b.produs));
 
       recalculeazaMesajFurnizor(dateFurnizor);
       salveazaFurnizorInFirebase(currentEditIndex);
