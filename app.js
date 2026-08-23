@@ -389,6 +389,17 @@
       
       populeazaDropdownuriModal();
       
+      // Auto-select based on active search if no explicit preselect is passed
+      if (preselectRandIndex === null || preselectRandIndex === undefined) {
+        const query = (document.getElementById('cauta-comenzi')?.value || "").toLowerCase().trim();
+        if (query.length > 0 && date.produseFormular) {
+          const match = date.produseFormular.find(p => p.produs.toLowerCase().includes(query));
+          if (match) {
+            preselectRandIndex = match.randIndex;
+          }
+        }
+      }
+      
       if (preselectRandIndex !== null && preselectRandIndex !== undefined) {
         const selProdus = document.getElementById('modal-sel-produs');
         let gasit = false;
