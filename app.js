@@ -107,6 +107,26 @@
       }
     }
 
+    function actualizeazaSugestiiCautare() {
+      const datalist = document.getElementById("sugestii-cautare");
+      if (!datalist) return;
+      
+      let sugestii = new Set();
+      dateGlobal.forEach(f => {
+        sugestii.add(f.furnizor);
+        if (f.produseFormular) {
+          f.produseFormular.forEach(p => sugestii.add(p.produs));
+        }
+      });
+      
+      let html = "";
+      // Convert to Array and sort alphabetically for nice display
+      Array.from(sugestii).sort((a,b) => a.localeCompare(b)).forEach(item => {
+        html += '<option value="' + escapeHtml(item) + '">';
+      });
+      datalist.innerHTML = html;
+    }
+
     function filtreazaComenzi() {
       const input = document.getElementById('cauta-comenzi');
       if (!input) return;
@@ -185,6 +205,8 @@
       listeComenzi.forEach((item, idx) => {
         populeazaDropdownuriConfig(idx);
       });
+
+      actualizeazaSugestiiCautare();
     }
 
     let deschisePanouriConfig = {};
