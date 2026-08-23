@@ -107,6 +107,35 @@
       }
     }
 
+    function filtreazaComenzi() {
+      const input = document.getElementById('cauta-comenzi');
+      if (!input) return;
+      const query = input.value.toLowerCase().trim();
+      
+      dateGlobal.forEach((date, globalIndex) => {
+        let card = document.getElementById("card-" + globalIndex);
+        if (card) {
+          if (query === "") {
+            card.style.display = ""; // Reset
+            return;
+          }
+          
+          let matchFurnizor = date.furnizor.toLowerCase().includes(query);
+          let matchProdus = false;
+          
+          if (date.produseFormular && date.produseFormular.length > 0) {
+            matchProdus = date.produseFormular.some(p => p.produs.toLowerCase().includes(query));
+          }
+          
+          if (matchFurnizor || matchProdus) {
+            card.style.display = "";
+          } else {
+            card.style.display = "none";
+          }
+        }
+      });
+    }
+
     function afiseazaToateCardurile(listeComenzi) {
       const zonaComenzi = document.getElementById("zona-carduri-comenzi");
       const zonaConfig = document.getElementById("zona-carduri-config");
@@ -947,6 +976,8 @@
 
     function reseteazaMecanic() {
       inchideModalConfirmare();
+      const searchInput = document.getElementById("cauta-comenzi");
+      if (searchInput) searchInput.value = "";
       // arataNotificare("⚡ Toate cantitățile au fost resetate în Firebase!", "success"); // Oprit la cerere
 
       furnizoriVerificati = {};
