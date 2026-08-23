@@ -14,7 +14,7 @@
 
   <title>Manager Comenzi</title>
 
-  <link rel="stylesheet" href="style.css?v=42">
+  <link rel="stylesheet" href="style.css?v=43">
   
   <!-- Firebase Compat Web SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -46,7 +46,7 @@
     <!-- TAB 1: COMENZI -->
     <div id="tab-comenzi" class="tab-continut activ">
       <button id="btn-reset-global" onclick="deschideModalConfirmare()">🧹 Resetează Toate Tabelele (0)</button>
-      <input type="text" id="cauta-comenzi" class="form-control" placeholder="🔍 Caută furnizor sau produs..." oninput="filtreazaComenzi()" style="margin-bottom: 15px;">
+      <input type="search" id="cauta-comenzi" class="form-control" placeholder="🔍 Caută furnizor sau produs..." oninput="filtreazaComenzi()" style="margin-bottom: 15px;">
       <div id="zona-carduri-comenzi"></div>
     </div>
 
@@ -159,6 +159,6 @@
   <!-- Container Notificări Toast -->
   <div id="toast-container"></div>
 
-  <script src="app.js?v=42"></script>
+  <script src="app.js?v=43"></script>
 </body>
 </html>
