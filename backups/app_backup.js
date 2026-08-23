@@ -107,6 +107,55 @@
       }
     }
 
+    function actualizeazaSugestiiCautare() {
+      const datalist = document.getElementById("sugestii-cautare");
+      if (!datalist) return;
+      
+      let sugestii = new Set();
+      dateGlobal.forEach(f => {
+        sugestii.add(f.furnizor);
+        if (f.produseFormular) {
+          f.produseFormular.forEach(p => sugestii.add(p.produs));
+        }
+      });
+      
+      let html = "";
+      // Convert to Array and sort alphabetically for nice display
+      Array.from(sugestii).sort((a,b) => a.localeCompare(b)).forEach(item => {
+        html += '<option value="' + escapeHtml(item) + '">';
+      });
+      datalist.innerHTML = html;
+    }
+
+    function filtreazaComenzi() {
+      const input = document.getElementById('cauta-comenzi');
+      if (!input) return;
+      const query = input.value.toLowerCase().trim();
+      
+      dateGlobal.forEach((date, globalIndex) => {
+        let card = document.getElementById("card-" + globalIndex);
+        if (card) {
+          if (query === "") {
+            card.style.display = ""; // Reset
+            return;
+          }
+          
+          let matchFurnizor = date.furnizor.toLowerCase().includes(query);
+          let matchProdus = false;
+          
+          if (date.produseFormular && date.produseFormular.length > 0) {
+            matchProdus = date.produseFormular.some(p => p.produs.toLowerCase().includes(query));
+          }
+          
+          if (matchFurnizor || matchProdus) {
+            card.style.display = "";
+          } else {
+            card.style.display = "none";
+          }
+        }
+      });
+    }
+
     function afiseazaToateCardurile(listeComenzi) {
       const zonaComenzi = document.getElementById("zona-carduri-comenzi");
       const zonaConfig = document.getElementById("zona-carduri-config");
@@ -156,6 +205,8 @@
       listeComenzi.forEach((item, idx) => {
         populeazaDropdownuriConfig(idx);
       });
+
+      actualizeazaSugestiiCautare();
     }
 
     let deschisePanouriConfig = {};
@@ -337,6 +388,17 @@
       overlay.style.display = "flex";
       
       populeazaDropdownuriModal();
+      
+      // Auto-select based on active search if no explicit preselect is passed
+      if (preselectRandIndex === null || preselectRandIndex === undefined) {
+        const query = (document.getElementById('cauta-comenzi')?.value || "").toLowerCase().trim();
+        if (query.length > 0 && date.produseFormular) {
+          const match = date.produseFormular.find(p => p.produs.toLowerCase().includes(query));
+          if (match) {
+            preselectRandIndex = match.randIndex;
+          }
+        }
+      }
       
       if (preselectRandIndex !== null && preselectRandIndex !== undefined) {
         const selProdus = document.getElementById('modal-sel-produs');
@@ -947,6 +1009,8 @@
 
     function reseteazaMecanic() {
       inchideModalConfirmare();
+      const searchInput = document.getElementById("cauta-comenzi");
+      if (searchInput) searchInput.value = "";
       // arataNotificare("⚡ Toate cantitățile au fost resetate în Firebase!", "success"); // Oprit la cerere
 
       furnizoriVerificati = {};
