@@ -52,7 +52,7 @@
 
     .form-group { margin-bottom: 10px; }
     .form-group label { display: block; font-size: 11px; font-weight: bold; color: #5F6368; margin-bottom: 3px; text-transform: uppercase; }
-    .form-control { width: 100%; padding: 9px; border: 1px solid #DADCE0; border-radius: 6px; font-size: 13px; box-sizing: border-box; background: white; }
+    .form-control { width: 100%; padding: 9px; border: 1px solid #DADCE0; border-radius: 6px; font-size: 15px; box-sizing: border-box; background: white; }
     
     .btn-salveaza { background-color: #25D366; color: white; margin-top: 10px; }
     .btn-salveaza:hover { background-color: #128C7E; }
